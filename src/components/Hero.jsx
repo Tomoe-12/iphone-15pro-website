@@ -3,6 +3,8 @@ import { useGSAP } from "@gsap/react"
 import { heroVideo, smallHeroVideo } from '../utils'
 import { useState } from "react"
 import { useEffect } from "react"
+import { useRef } from "react"
+
 const Hero = () => {
 
   const [videoSrc, setVideoSrc] = useState(window.innerWidth < 760 ? smallHeroVideo : heroVideo)
@@ -11,12 +13,14 @@ const Hero = () => {
     else setVideoSrc(heroVideo)
   }
 
+  const videoRef = useRef(null)
+
   useGSAP(() => {
     gsap.to('#hero', {
       opacity: 1,
-      delay: 1.5
+      delay: 1.4
     })
-    gsap.to('#cta', { opacity: 1, y: -50, delay: 2, })
+    gsap.to('#cta', { opacity: 1, y: -50, delay: 1.4, })
   }, [])
 
   useEffect(() => {
@@ -26,12 +30,21 @@ const Hero = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load()
+      setTimeout(() => {
+        videoRef.current.play()
+      }, 500) // delay video playback by 1 second
+    }
+  }, [videoSrc])
+
   return (
     <section className="w-full nav-height bg-black relative">
       <div className="h-5/6 w-full flex-center flex-col">
         <p id="hero" className="hero-title">iPhone 15 pro</p>
         <div className="md:w-10/12 w-9/12 ">
-          <video className="pointer-events-none" autoPlay muted playsInline={true} key={videoSrc}>
+          <video ref={videoRef} className="pointer-events-none" muted playsInline={true} key={videoSrc}>
             <source src={videoSrc} type="video/mp4" />
           </video>
         </div>
